@@ -1,11 +1,10 @@
-import { Chart, Graph } from './chart';
+import { Chart, Graph, Line } from './chart';
 
 export class ChartBuilder {
   build(rawInput) {
     const graphs = this._computeGraphs(rawInput);
-    const extrema = this._findExtrema(graphs);
 
-    return new Chart(graphs, extrema);
+    return new Chart(graphs);
   }
 
   _findExtrema(graphs) {
@@ -25,16 +24,37 @@ export class ChartBuilder {
       return ids;
     }, []);
 
-    return graphIds.reduce((graphs, id) => {
+    let graphs = graphIds.reduce((graphs, id) => {
       const nodes = columns.find(c => c[0] === id).filter(n => Number.isInteger(n));
       const name = names[id];
       const color = colors[id];
 
-      const graph = new Graph(nodes, color, name);
+      const lines = this._computeLines(nodes, color, name);
+      const graph = new Graph(nodes, lines);
 
       graphs.push(graph);
 
       return graphs;
     }, []);
+
+    this._assignExtrema(graphs);
+
+    return graphs;
+  }
+
+  _computeLines(nodes, color, name) {
+    const lines = [];
+
+    for (let i = 0, j = 1; i < nodes.length - 2; i++, j++) {
+      lines.push(new Line(nodes[i], nodes[j], color, name));
+    }
+
+    return lines;
+  }
+
+  _assignExtrema(graphs) {
+    const extrema = this._findExtrema(graphs);
+
+    graphs.map(({ lines }) => lines.forEach(l => (l.extrema = extrema)));
   }
 }

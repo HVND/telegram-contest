@@ -1,6 +1,4 @@
 import * as styles from './graph-view.scss';
-import * as input from '../../chart_data.json';
-import { ChartBuilder } from '../../chart-builder';
 
 export default class GraphViewComponent extends HTMLElement {
   constructor() {
@@ -8,19 +6,29 @@ export default class GraphViewComponent extends HTMLElement {
     this._init();
   }
 
+  set graph(value) {
+    this._graph = value;
+    this._renderLines();
+  }
+
+  get graph() {
+    return this._graph;
+  }
+
   _init() {
-    const shadowRoot = this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' });
     const style = document.createElement('style');
 
     style.textContent = styles[0][1];
-    shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(style);
+  }
 
-    const chart = new ChartBuilder().build(input.default[0]);
-
-    for (let i = 0; i < 5; i++) {
+  _renderLines() {
+    this._graph.lines.forEach(l => {
       const line = document.createElement('graph-line');
+      line.line = l;
 
-      shadowRoot.appendChild(line);
-    }
+      this.shadowRoot.appendChild(line);
+    });
   }
 }
