@@ -15,6 +15,10 @@ export default class GraphLineComponent extends HTMLElement {
     return this._line;
   }
 
+  connectedCallback() {
+    this._updateLinePaddings();
+  }
+
   _init() {
     this.attachShadow({ mode: 'open' });
     const style = document.createElement('style');
@@ -37,7 +41,6 @@ export default class GraphLineComponent extends HTMLElement {
     this.lineEl.setAttribute('stroke-linecap', 'round');
 
     this._updateLineDirection();
-    this._updateLinePaddings();
   }
 
   _updateLineDirection() {
@@ -57,7 +60,9 @@ export default class GraphLineComponent extends HTMLElement {
   }
 
   _updateLinePaddings() {
-    const height = 150;
+    this.svgEl.style.transition = 'none';
+
+    const height = this.offsetHeight;
     const top =
       this.line.startPoint < this.line.endPoint ? this.line.endPoint : this.line.startPoint;
     const bottom =

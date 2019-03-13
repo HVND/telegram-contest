@@ -1,0 +1,19 @@
+:host {
+  position: absolute;
+  display: block;
+  height: 100%;
+  left: 40%;
+  right: 40%;
+  border-top: 2px solid rgba(204, 204, 204, 0.5);
+  border-bottom: 2px solid rgba(204, 204, 204, 0.5);
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  z-index: 9;
+}
+
+div {
+  background: rgba(204, 204, 204, 0.5);
+  width: 10px;
+  height: 100%;
+}
