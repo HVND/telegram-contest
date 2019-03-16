@@ -35,7 +35,13 @@ module.exports = merge(common, {
       },
       {
         test: /\.s?css$/i,
+        exclude: Path.resolve(__dirname, '../src/styles'),
         use: ['css-loader?sourceMap=true', 'sass-loader'],
+      },
+      {
+        test: /\.s?css$/i,
+        include: Path.resolve(__dirname, '../src/styles'),
+        use: ['style-loader', 'css-loader?sourceMap=true', 'sass-loader'],
       },
     ],
   },

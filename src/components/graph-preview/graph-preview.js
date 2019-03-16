@@ -19,6 +19,7 @@ export default class GraphPreviewComponent extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     const style = document.createElement('style');
     this.viewportPreviewEl = document.createElement('viewport-preview');
+    this.viewportPreviewEl.parentEl = this;
 
     style.textContent = styles[0][1];
     this.shadowRoot.appendChild(style);
