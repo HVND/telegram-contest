@@ -34,6 +34,7 @@ export default class ViewportPreviewComponent extends HTMLElement {
     const endBorderEl = document.createElement('div');
     this.defaultOptions = {
       minWidth: 10, // in percentages
+      dispatchBoundsChangeEvent: this._dispatchBoundsChangeEvent.bind(this),
     };
 
     style.textContent = styles[0][1];
@@ -52,9 +53,9 @@ export default class ViewportPreviewComponent extends HTMLElement {
     this.viewportPreviewManager.init();
   }
 
-  _dispatchBoundsChangeEvent() {
-    const event = new CustomEvent('boundsChange', { detail: {} });
+  _dispatchBoundsChangeEvent(detail) {
+    const event = new CustomEvent('boundsChange', { detail });
 
-    elem.dispatchEvent(event);
+    this.dispatchEvent(event);
   }
 }

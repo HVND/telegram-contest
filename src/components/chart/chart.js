@@ -11,6 +11,11 @@ export default class ChartComponent extends HTMLElement {
     this._renderGraphs();
   }
 
+  set graphPreviewBounds({ left, right, width }) {
+    this.container.style.left = (left / width) * -100 + '%';
+    this.container.style.right = (right / width) * -100 + '%';
+  }
+
   get chart() {
     return this._chart;
   }
@@ -24,11 +29,15 @@ export default class ChartComponent extends HTMLElement {
   }
 
   _renderGraphs() {
+    this.container = document.createElement('div');
+
     this.chart.graphs.forEach(g => {
       const graphView = document.createElement('graph-view');
       graphView.graph = g;
 
-      this.shadowRoot.appendChild(graphView);
+      this.container.appendChild(graphView);
     });
+
+    this.shadowRoot.appendChild(this.container);
   }
 }

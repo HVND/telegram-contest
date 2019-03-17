@@ -15,6 +15,18 @@ export default class GraphPreviewComponent extends HTMLElement {
     return this._chart;
   }
 
+  connectedCallback() {
+    this.viewportPreviewEl.addEventListener('boundsChange', ({ detail }) =>
+      this._dispatchBoundsChangeEvent(detail),
+    );
+  }
+
+  _dispatchBoundsChangeEvent(detail) {
+    const event = new CustomEvent('boundsChange', { detail });
+
+    this.dispatchEvent(event);
+  }
+
   _init() {
     this.attachShadow({ mode: 'open' });
     const style = document.createElement('style');

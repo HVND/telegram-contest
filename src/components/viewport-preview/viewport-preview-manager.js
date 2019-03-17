@@ -23,16 +23,27 @@ export default class ViewportPreviewManager {
     document.addEventListener('dragstart', () => false);
   }
 
-  _mousedownProcess(e) {
+  _detectTargetEl(e) {
     const nodes = e.composedPath();
     const isContainer = nodes.indexOf(this.containerEl) !== -1;
     const isStartBorder = nodes.indexOf(this.startBorderEl) !== -1;
     const isEndBorder = nodes.indexOf(this.endBorderEl) !== -1;
 
-    if (isContainer && !isStartBorder & !isEndBorder) {
+    return {
+      isContainer: isContainer && !isStartBorder & !isEndBorder,
+      isStartBorder,
+      isEndBorder,
+    };
+  }
+
+  _mousedownProcess(e) {
+    const { isContainer, isStartBorder, isEndBorder } = this._detectTargetEl(e);
+
+    if (isContainer) {
       this.containerTakenOptions = {
         shiftXLeft: e.pageX - this._getShiftCoords(this.containerEl).left,
         shiftXRight: e.pageX - this._getShiftCoords(this.containerEl).right,
+        width: this._getRectInPercentages(this.containerEl).width,
       };
     }
 
@@ -57,30 +68,46 @@ export default class ViewportPreviewManager {
 
   _mousemoveProcess(e) {
     if (this.startBorderTakenOptions) {
-      this._startBorderDraggingProcess(e, this.startBorderTakenOptions.shiftX);
+      this._startBorderDraggingProcess(
+        e,
+        this.startBorderTakenOptions.shiftX,
+        this.options.minWidth,
+      );
     }
 
     if (this.endBorderTakenOptions) {
-      this._endBorderDraggingProcess(e, this.endBorderTakenOptions.shiftX);
+      this._endBorderDraggingProcess(e, this.endBorderTakenOptions.shiftX, this.options.minWidth);
     }
 
     if (this.containerTakenOptions) {
-      this._startBorderDraggingProcess(e, this.containerTakenOptions.shiftXLeft);
-      this._endBorderDraggingProcess(e, this.containerTakenOptions.shiftXRight);
+      this._startBorderDraggingProcess(
+        e,
+        this.containerTakenOptions.shiftXLeft,
+        this.containerTakenOptions.width,
+      );
+      this._endBorderDraggingProcess(
+        e,
+        this.containerTakenOptions.shiftXRight,
+        this.containerTakenOptions.width,
+      );
+    }
+
+    if (this.startBorderTakenOptions || this.endBorderTakenOptions || this.containerTakenOptions) {
+      this.options.dispatchBoundsChangeEvent(this._getRectInPercentages(this.containerEl));
     }
   }
 
-  _startBorderDraggingProcess(e, shiftX) {
+  _startBorderDraggingProcess(e, shiftX, minWidth) {
     const pageX = e.touches ? e.touches[0].pageX : e.pageX;
     const { left, width } = this.parentEl.getBoundingClientRect();
     const x = ((pageX - shiftX - left) * 100) / width;
 
     const containerWidth = 100 - this._getRectInPercentages(this.containerEl).right - x;
 
-    if (containerWidth < this.options.minWidth) {
+    if (containerWidth < minWidth) {
       const { right } = this._getRectInPercentages(this.containerEl);
 
-      this.containerEl.style.left = 100 - right - this.options.minWidth + '%';
+      this.containerEl.style.left = 100 - right - minWidth + '%';
 
       return;
     }
@@ -92,17 +119,17 @@ export default class ViewportPreviewManager {
     }
   }
 
-  _endBorderDraggingProcess(e, shiftX) {
+  _endBorderDraggingProcess(e, shiftX, minWidth) {
     const pageX = e.touches ? e.touches[0].pageX : e.pageX;
     const { left, width } = this.parentEl.getBoundingClientRect();
     const x = 100 - ((pageX - shiftX - left) * 100) / width;
 
     const containerWidth = 100 - parseFloat(this.containerEl.style.left) - x;
 
-    if (containerWidth < this.options.minWidth) {
+    if (containerWidth < minWidth) {
       const { left } = this._getRectInPercentages(this.containerEl);
 
-      this.containerEl.style.right = 100 - left - this.options.minWidth + '%';
+      this.containerEl.style.right = 100 - left - minWidth + '%';
 
       return;
     }
@@ -123,12 +150,14 @@ export default class ViewportPreviewManager {
     };
   }
 
-  _getRectInPercentages(el) {
-    const { left, right } = el.style;
+  _getRectInPercentages({ style }) {
+    const left = parseFloat(style.left);
+    const right = parseFloat(style.right);
 
     return {
-      left: parseFloat(left),
-      right: parseFloat(right),
+      left,
+      right,
+      width: 100 - right - left,
     };
   }
 }

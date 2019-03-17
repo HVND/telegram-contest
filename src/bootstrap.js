@@ -10,4 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.body.appendChild(chartEl);
   document.body.appendChild(graphPreviewEl);
+
+  graphPreviewEl.addEventListener(
+    'boundsChange',
+    ({ detail }) => (chartEl.graphPreviewBounds = detail),
+  );
 });
