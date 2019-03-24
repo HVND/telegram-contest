@@ -15,7 +15,16 @@ export default class GraphLineComponent extends HTMLElement {
     return this._line;
   }
 
-  connectedCallback() {
+  set height(value) {
+    this._height = value;
+    this._updateLinePaddings();
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set rerender(value) {
     this._updateLinePaddings();
   }
 
@@ -60,15 +69,16 @@ export default class GraphLineComponent extends HTMLElement {
   }
 
   _updateLinePaddings() {
-    this.svgEl.style.transition = 'none';
+    this.svgEl.style.display = this.line.disabled ? 'none' : 'block';
 
-    const height = this.offsetHeight;
+    this.svgEl.style.transition = this.svgEl.style.paddingTop ? '0.3s all' : 'none';
+
     const top =
       this.line.startPoint < this.line.endPoint ? this.line.endPoint : this.line.startPoint;
     const bottom =
       this.line.startPoint < this.line.endPoint ? this.line.startPoint : this.line.endPoint;
-    const paddingTop = height - (top * height) / this.line.extrema;
-    const paddingBottom = (bottom * height) / this.line.extrema;
+    const paddingTop = this.height - (top * this.height) / this.line.extrema;
+    const paddingBottom = (bottom * this.height) / this.line.extrema;
 
     this.svgEl.style.paddingTop = paddingTop + 'px';
     this.svgEl.style.paddingBottom = paddingBottom + 'px';

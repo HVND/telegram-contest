@@ -16,31 +16,13 @@ export default class ViewportPreviewComponent extends HTMLElement {
   connectedCallback() {
     this.style.left = '40%';
     this.style.right = '40%';
-  }
 
-  set parentEl(value) {
-    this._parentEl = value;
-    this.viewportPreviewManager.parentEl = this.parentEl;
-  }
-
-  get parentEl() {
-    return this._parentEl;
-  }
-
-  _init() {
-    this.attachShadow({ mode: 'open' });
-    const style = document.createElement('style');
     const startBorderEl = document.createElement('div');
     const endBorderEl = document.createElement('div');
     this.defaultOptions = {
       minWidth: 10, // in percentages
       dispatchBoundsChangeEvent: this._dispatchBoundsChangeEvent.bind(this),
     };
-
-    style.textContent = styles[0][1];
-    this.shadowRoot.appendChild(style);
-    this.shadowRoot.appendChild(startBorderEl);
-    this.shadowRoot.appendChild(endBorderEl);
 
     this.viewportPreviewManager = new ViewportPreviewManager(
       this,
@@ -51,6 +33,25 @@ export default class ViewportPreviewComponent extends HTMLElement {
     );
 
     this.viewportPreviewManager.init();
+
+    this.shadowRoot.appendChild(startBorderEl);
+    this.shadowRoot.appendChild(endBorderEl);
+  }
+
+  set parentEl(value) {
+    this._parentEl = value;
+  }
+
+  get parentEl() {
+    return this._parentEl;
+  }
+
+  _init() {
+    this.attachShadow({ mode: 'open' });
+    const style = document.createElement('style');
+
+    style.textContent = styles[0][1];
+    this.shadowRoot.appendChild(style);
   }
 
   _dispatchBoundsChangeEvent(detail) {

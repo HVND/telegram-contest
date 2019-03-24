@@ -1,6 +1,7 @@
 export class Chart {
-  constructor(graphs) {
+  constructor(graphs, xAxis) {
     this.graphs = graphs;
+    this.xAxis = xAxis;
   }
 }
 

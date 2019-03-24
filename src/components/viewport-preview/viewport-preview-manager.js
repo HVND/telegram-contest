@@ -9,6 +9,9 @@ export default class ViewportPreviewManager {
 
   init() {
     this._registerListeners();
+    requestAnimationFrame(() =>
+      this.options.dispatchBoundsChangeEvent(this._getRectInPercentages(this.containerEl)),
+    );
   }
 
   dispose() {}

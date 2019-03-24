@@ -1,16 +1,40 @@
 import { Chart, Graph, Line } from './chart';
 
+const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export class ChartBuilder {
   build(rawInput) {
     const graphs = this._computeGraphs(rawInput);
+    const xAxis = this._computeXAxisValues(rawInput);
 
-    return new Chart(graphs);
+    return new Chart(graphs, xAxis);
+  }
+
+  assignExtrema(graphs) {
+    const extrema = this._findExtrema(graphs);
+
+    graphs.map(({ lines }) => lines.forEach(l => (l.extrema = extrema)));
   }
 
   _findExtrema(graphs) {
-    const nodes = graphs.reduce((poins, { nodes }) => {
-      return [...poins, ...nodes];
-    }, []);
+    const nodes = graphs
+      .filter(({ lines }) => !lines[0].disabled)
+      .reduce((poins, { nodes }) => {
+        return [...poins, ...nodes];
+      }, []);
 
     return Math.max(...nodes);
   }
@@ -37,7 +61,7 @@ export class ChartBuilder {
       return graphs;
     }, []);
 
-    this._assignExtrema(graphs);
+    this.assignExtrema(graphs);
 
     return graphs;
   }
@@ -52,9 +76,20 @@ export class ChartBuilder {
     return lines;
   }
 
-  _assignExtrema(graphs) {
-    const extrema = this._findExtrema(graphs);
+  _computeXAxisValues({ types, columns }) {
+    const column = Object.keys(types).find(type => type === 'x');
 
-    graphs.map(({ lines }) => lines.forEach(l => (l.extrema = extrema)));
+    return columns
+      .find(c => c[0] === column)
+      .reduce((dates, date) => {
+        if (Number.isInteger(date)) {
+          const d = new Date(date);
+          const label = `${monthNames[d.getMonth()]} ${d.getDay() + 1}`;
+
+          dates.push(label);
+        }
+
+        return dates;
+      }, []);
   }
 }

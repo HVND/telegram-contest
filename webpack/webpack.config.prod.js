@@ -21,11 +21,6 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.(js)$/,
-        exclude: /node_modules/,
-        use: 'babel-loader',
-      },
-      {
         test: /\.s?css/i,
         exclude: Path.resolve(__dirname, '../src/styles'),
         use: ['css-loader', 'sass-loader'],
