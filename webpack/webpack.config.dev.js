@@ -20,15 +20,6 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.(js)$/,
-        include: Path.resolve(__dirname, '../src'),
-        enforce: 'pre',
-        loader: 'eslint-loader',
-        options: {
-          emitWarning: true,
-        },
-      },
-      {
         test: /\.s?css$/i,
         exclude: Path.resolve(__dirname, '../src/styles'),
         use: ['css-loader?sourceMap=true', 'sass-loader'],
