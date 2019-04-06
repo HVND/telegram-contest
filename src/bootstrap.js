@@ -1,8 +1,5 @@
-import * as input from './chart_data.json';
+import Canvas from './entities/canvas';
 
-input.default.forEach(c => {
-  const chartShellEl = document.createElement('chart-shell');
-  chartShellEl.chart = c;
-
-  document.body.appendChild(chartShellEl);
+document.addEventListener('DOMContentLoaded', () => {
+    new Canvas(window.innerWidth, 300, 30, 50, document.body).connect();
 });
